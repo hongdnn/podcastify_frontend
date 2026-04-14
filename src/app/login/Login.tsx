@@ -1,9 +1,8 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function Login() {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const isLoading = false;
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-gray-900 via-purple-900 to-violet-900 p-4">

@@ -69,7 +69,7 @@ export default function Step5() {
             password,
         };
         try {
-            await authService.SU(requestData);
+            await authService.signup(requestData);
             resetData();
             navigate("/dashboard");
         } catch (error) {

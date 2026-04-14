@@ -64,9 +64,24 @@ export default function Dashboard() {
                         </div>
                         <div>
                             <h2 className="mb-2 text-xl">Previous Podcasts</h2>
+                            {error && (
+                                <p className="mb-3 rounded-lg border border-red-500/20 bg-red-500/10 p-2 text-sm text-red-400">
+                                    {error}
+                                </p>
+                            )}
+                            {isLoading && podcasts.length === 0 && (
+                                <p className="text-sm text-gray-300">
+                                    Loading podcasts...
+                                </p>
+                            )}
                             {podcasts.map((p) => (
                                 <CardItem key={p.id} podcast={p} />
                             ))}
+                            {isLoading && podcasts.length > 0 && (
+                                <p className="mt-3 text-sm text-gray-300">
+                                    Loading more...
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>
