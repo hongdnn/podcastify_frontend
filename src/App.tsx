@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+    Outlet,
+    Navigate,
+} from "react-router-dom";
 import Home from "./app/home/Home";
 import Step1 from "./app/onboarding/Step1";
 import Step2 from "./app/onboarding/Step2";
@@ -10,6 +16,7 @@ import Dashboard from "./app/dashboard/Dashboard";
 import Login from "./app/login/Login";
 import RequireAuth from "./components/RequireAuth";
 import { AuthProvider } from "./context/AuthContext";
+import { useAuth } from "./context/AuthContext";
 
 function OnboardingRoutes() {
     return (
@@ -19,21 +26,45 @@ function OnboardingRoutes() {
     );
 }
 
+function AuthenticatedOnlyRoute({ children }: { children: React.ReactNode }) {
+    const { isAuthenticated } = useAuth();
+
+    if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+
+    return <>{children}</>;
+}
+
 function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<Home />} />
+                    <Route
+                        path="/"
+                        element={
+                            <AuthenticatedOnlyRoute>
+                                <Home />
+                            </AuthenticatedOnlyRoute>
+                        }
+                    />
                     <Route
                         path="/dashboard"
                         element={
                             <RequireAuth>
-                                <Dashboard />
+                                <OnboardingProvider>
+                                    <Dashboard />
+                                </OnboardingProvider>
                             </RequireAuth>
                         }
                     />
-                    <Route path="/login" element={<Login />} />
+                    <Route
+                        path="/login"
+                        element={
+                            <AuthenticatedOnlyRoute>
+                                <Login />
+                            </AuthenticatedOnlyRoute>
+                        }
+                    />
                     <Route path="/onboarding/*" element={<OnboardingRoutes />}>
                         <Route path="step-1" element={<Step1 />} />
                         <Route path="step-2" element={<Step2 />} />

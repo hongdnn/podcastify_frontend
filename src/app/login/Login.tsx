@@ -1,8 +1,32 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { getErrorMessage } from "../../services/apiClient";
+import { authService } from "../../services/authService";
 
 export default function Login() {
-    const isLoading = false;
+    const navigate = useNavigate();
+    const { setAuthenticated } = useAuth();
+    const [isLoading, setIsLoading] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+
+    const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setIsLoading(true);
+        setError("");
+        try {
+            await authService.login({ email, password });
+            setAuthenticated(true);
+            navigate("/dashboard");
+        } catch (error) {
+            setError(getErrorMessage(error));
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-gray-900 via-purple-900 to-violet-900 p-4">
@@ -32,13 +56,20 @@ export default function Login() {
                     Sign in to continue your podcast journey
                 </p>
                 <div className="glass flex w-screen max-w-120 flex-col rounded-2xl p-6">
-                    <form onSubmit={() => {}} className="flex flex-col">
+                    <form onSubmit={handleLogin} className="flex flex-col">
+                        {error && (
+                            <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-2">
+                                <p className="text-sm text-red-400">{error}</p>
+                            </div>
+                        )}
                         <label htmlFor="email" className="mb-2">
                             Email Address
                         </label>
                         <input
                             type="text"
                             id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="mb-4 rounded-xl border border-gray-700 bg-gray-900/50 p-2 focus:border-indigo-500 focus:outline-none"
                         />
                         <label htmlFor="password" className="mb-2">
@@ -47,11 +78,14 @@ export default function Login() {
                         <input
                             type="password"
                             id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             className="mb-4 rounded-xl border border-gray-700 bg-gray-900/50 p-2 focus:border-indigo-500 focus:outline-none"
                         />
                         {/* Submit Button */}
                         <motion.button
                             type="submit"
+                            disabled={isLoading}
                             className="glow-hover w-full rounded-xl bg-linear-to-r from-indigo-600 to-purple-600 px-6 py-2 font-medium text-white transition-all duration-300 hover:from-indigo-700 hover:to-purple-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                             whileHover={{ scale: isLoading ? 1 : 1.02 }}
                             whileTap={{ scale: isLoading ? 1 : 0.98 }}

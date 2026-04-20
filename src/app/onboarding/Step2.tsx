@@ -1,181 +1,183 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import OnboardingLayout from "../../components/onboarding/OnboardingLayout";
-import { useNavigate } from "react-router-dom";
 import { useOnboarding } from "../../context/OnboardingContext";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
-const FIELDS = [
-    {
-        id: "technology",
-        label: "Technology",
-        icon: "💻",
-        color: "from-blue-500 to-cyan-500",
-    },
-    {
-        id: "business",
-        label: "Business",
-        icon: "💼",
-        color: "from-green-500 to-emerald-500",
-    },
-    {
-        id: "science",
-        label: "Science",
-        icon: "🔬",
-        color: "from-purple-500 to-pink-500",
-    },
-    {
-        id: "arts",
-        label: "Arts",
-        icon: "🎨",
-        color: "from-red-500 to-orange-500",
-    },
-    {
-        id: "health",
-        label: "Health",
-        icon: "🏥",
-        color: "from-teal-500 to-cyan-500",
-    },
-    {
-        id: "sports",
-        label: "Sports",
-        icon: "⚽",
-        color: "from-yellow-500 to-orange-500",
-    },
-    {
-        id: "us-politics",
-        label: "US Politics",
-        icon: "🏛️",
-        color: "from-indigo-500 to-blue-500",
-    },
-    {
-        id: "world-news",
-        label: "World News",
-        icon: "🌍",
-        color: "from-blue-500 to-purple-500",
-    },
-    {
-        id: "entertainment",
-        label: "Entertainment",
-        icon: "🎬",
-        color: "from-pink-500 to-rose-500",
-    },
-    {
-        id: "finance",
-        label: "Finance",
-        icon: "💰",
-        color: "from-green-500 to-teal-500",
-    },
-    {
-        id: "education",
-        label: "Education",
-        icon: "📚",
-        color: "from-indigo-500 to-purple-500",
-    },
-    {
-        id: "environment",
-        label: "Environment",
-        icon: "🌱",
-        color: "from-green-500 to-lime-500",
-    },
-    {
-        id: "food",
-        label: "Food & Cooking",
-        icon: "🍳",
-        color: "from-orange-500 to-red-500",
-    },
-    {
-        id: "travel",
-        label: "Travel",
-        icon: "✈️",
-        color: "from-sky-500 to-blue-500",
-    },
-    {
-        id: "fashion",
-        label: "Fashion",
-        icon: "👗",
-        color: "from-pink-500 to-purple-500",
-    },
-    {
-        id: "gaming",
-        label: "Gaming",
-        icon: "🎮",
-        color: "from-purple-500 to-indigo-500",
-    },
+const PROFESSIONS = [
+    "Software Engineer",
+    "Data Scientist",
+    "Product Manager",
+    "Marketing Manager",
+    "Business Analyst",
+    "Designer",
+    "Teacher",
+    "Consultant",
+    "Entrepreneur",
+    "Student",
+    "Researcher",
+    "Accountant",
+    "Lawyer",
+    "Doctor",
+    "Nurse",
+    "Engineer",
+    "Architect",
+    "Writer",
+    "Journalist",
+    "Sales Manager",
+    "Project Manager",
+    "HR Manager",
+    "Financial Analyst",
+    "Real Estate Agent",
+    "Photographer",
+    "Chef",
+    "Artist",
+    "Musician",
+    "Scientist",
+    "Pharmacist",
 ];
 
 export default function Step2() {
+    const { setCurrentStep, data, updateData } = useOnboarding();
+    const [profession, setProfession] = useState<string>(data.profession);
+    const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
     const navigate = useNavigate();
-    const { updateData, data, setCurrentStep } = useOnboarding();
-    const [selectedFields, setSelectedFields] = useState<string[]>(data.fields);
-    
+
+    const filteredProfessions = useMemo(() => {
+        if (profession.trim().length === 0) return [];
+        return PROFESSIONS.filter((p) =>
+            p.toLowerCase().includes(profession.toLowerCase()),
+        ).slice(0, 6);
+    }, [profession]);
+
     const handleNext = () => {
-        setCurrentStep(3)
+        updateData("profession", profession);
+        setCurrentStep(3);
         navigate("/onboarding/step-3");
     };
 
-    useEffect(() => {
-        updateData('fields', selectedFields)
-    }, [selectedFields, updateData])
+    const handleSelect = (selectedProfession: string) => {
+        setProfession(selectedProfession);
+        updateData("profession", selectedProfession);
+        setShowSuggestions(false);
+    };
 
-    const toggleField = (fieldId: string) => {
-        setSelectedFields((prev) => 
-            prev.includes(fieldId) ?
-            prev.filter((id) => id !== fieldId) :
-            [...prev, fieldId]
-        )
-    }
+    const handleSkip = () => {
+        updateData("profession", "");
+        setCurrentStep(3);
+        navigate("/onboarding/step-3");
+    };
 
     return (
-        <OnboardingLayout step={2} onNext={handleNext} nextDisabled={selectedFields.length === 0}>
+        <OnboardingLayout
+            step={2}
+            onNext={handleNext}
+            nextDisabled={!PROFESSIONS.includes(profession)}
+        >
             <>
-                <p className="just mx-3 text-3xl font-semibold">
-                    What topics interest you?
+                <p className="text-3xl font-semibold">
+                    What&apos;s your profession?
                 </p>
-                <p className="mx-3 my-3 text-gray-500">
-                    Select at least one topic. You can always change this later.
+                <p className="my-3 text-gray-500">
+                    This helps us tailor content relevant to your field.
                 </p>
-                {selectedFields.length > 0 && (
-                    <p className="text-sm font-medium text-indigo-400">
-                        {selectedFields.length}{" "}
-                        {selectedFields.length === 1 ? "topic" : "topics"}{" "}
-                        selected
-                    </p>
-                )}
 
-                <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                    {FIELDS.map((field) => {
-                        const isSelected = selectedFields.includes(field.id);
-                        return (
-                            <div
-                                key={field.id}
-                                onClick={() => toggleField(field.id)}
-                                className={`is relative flex flex-col items-center rounded-xl border border-gray-700 duration-300 hover:scale-105 ${
-                                    isSelected
-                                        ? "glass-strong border-2 border-indigo-500"
-                                        : "glass border border-gray-700 hover:border-gray-600"
-                                }`}
+                <div className="relative">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                    >
+                        <input
+                            type="text"
+                            value={profession}
+                            onChange={(e) => setProfession(e.target.value)}
+                            onFocus={() => setShowSuggestions(true)}
+                            onBlur={() => setShowSuggestions(false)}
+                            placeholder="e.g., Software Engineer, Teacher, Doctor..."
+                            className="w-full max-w-xl rounded-xl border border-gray-700 bg-gray-900/50 px-4 py-2 text-lg placeholder-gray-500 transition-colors duration-300 focus:border-indigo-500 focus:outline-none"
+                        />
+                    </motion.div>
+                    <AnimatePresence>
+                        {showSuggestions && filteredProfessions.length > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className="glass-strong absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-gray-700 shadow-xl"
                             >
-                                <div
-                                    className={`absolute top-2 right-2 ${isSelected ? "" : "hidden"} flex h-6 w-6 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-purple-600`}
-                                >
-                                    <svg
-                                        className="h-4 w-4 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
+                                {filteredProfessions.map((p) => (
+                                    <motion.button
+                                        key={p}
+                                        onClick={() => handleSelect(p)}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="flex w-full items-center space-x-3 px-6 py-3 text-left text-white transition-colors duration-200 hover:bg-white/10"
                                     >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={3}
-                                            d="M5 13l4 4L19 7"
-                                        />
-                                    </svg>
-                                </div>
-                                <span className="text-3xl">{field.icon}</span>
-                                <span>{field.label}</span>
-                            </div>
-                        );
-                    })}
+                                        <svg
+                                            className="h-5 w-5 text-gray-400"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                            />
+                                        </svg>
+                                        <span>{p}</span>
+                                    </motion.button>
+                                ))}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                        className="mt-8"
+                    >
+                        <p className="mt-10! mb-3 text-sm text-gray-400">
+                            Popular professions:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {[
+                                "Software Engineer",
+                                "Designer",
+                                "Teacher",
+                                "Entrepreneur",
+                                "Student",
+                                "Consultant",
+                            ].map((p) => (
+                                <button
+                                    key={p}
+                                    onClick={() => handleSelect(p)}
+                                    className="glass rounded-full px-2 py-2 text-sm text-gray-300 transition-all duration-200 hover:bg-white/10 hover:text-white"
+                                >
+                                    {p}
+                                </button>
+                            ))}
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                        className="mt-8"
+                    >
+                        <button
+                            onClick={handleSkip}
+                            className="text-sm text-gray-400 transition-colors duration-200 hover:text-gray-300"
+                        >
+                            Prefer not to say
+                        </button>
+                    </motion.div>
                 </div>
             </>
         </OnboardingLayout>

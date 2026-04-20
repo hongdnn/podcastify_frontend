@@ -4,9 +4,11 @@ import { useOnboarding } from "../../context/OnboardingContext";
 import { useCallback, useState } from "react";
 import { authService, type SignupRequest } from "../../services/authService";
 import { getErrorMessage } from "../../services/apiClient";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Step5() {
     const navigate = useNavigate();
+    const { setAuthenticated } = useAuth();
     const { data, resetData } = useOnboarding();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -70,6 +72,7 @@ export default function Step5() {
         };
         try {
             await authService.signup(requestData);
+            setAuthenticated(true);
             resetData();
             navigate("/dashboard");
         } catch (error) {

@@ -5,19 +5,22 @@ import { tokenStorage } from "../utils/tokenStorage";
 type AuthContextType = {
     isLoading: boolean;
     isAuthenticated: boolean;
+    setAuthenticated: (isAuthenticated: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({children} : {children: React.ReactNode }) {
-    const [isAuthenticated] = useState(() => {
+    const [isAuthenticated, setAuthenticated] = useState(() => {
         const token = tokenStorage.getToken()
         return Boolean(token)
     });
     const [isLoading] = useState(false);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, isLoading }}>
+        <AuthContext.Provider
+            value={{ isAuthenticated, isLoading, setAuthenticated }}
+        >
             {children}
         </AuthContext.Provider>
     )

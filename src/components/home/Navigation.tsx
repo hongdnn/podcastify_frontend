@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Navigation() {
     return (
         <nav className="fixed top-0 right-0 left-0 z-50 transition-all duration-300">
@@ -29,12 +31,12 @@ export default function Navigation() {
                     <a>Pricing</a>
                 </div>
                 <div className="items-center space-x-4 md:flex">
-                    <button className="border border-gray-700 bg-transparent p-2 hover:bg-white/10">
+                    <Link to={"/login"} className="border border-gray-700 bg-transparent p-2 hover:bg-white/10">
                         Login
-                    </button>
-                    <button className="border border-gray-700 bg-linear-to-r from-indigo-600 to-purple-600 p-2 hover:bg-white/10">
+                    </Link>
+                    <Link to={"/onboarding/step-1"} className="border border-gray-700 bg-linear-to-r from-indigo-600 to-purple-600 p-2 hover:bg-white/10">
                         Get Started
-                    </button>
+                    </Link>
                 </div>
             </div>
         </nav>

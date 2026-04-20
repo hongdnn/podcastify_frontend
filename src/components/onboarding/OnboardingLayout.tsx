@@ -10,6 +10,7 @@ interface OnboardingLayoutProps {
     onBack?: () => void;
     nextDisabled?: boolean;
     nextLabel?: string;
+    totalSteps?: number;
 }
 
 export default function OnboardingLayout({
@@ -19,6 +20,7 @@ export default function OnboardingLayout({
     onBack,
     nextDisabled = false,
     nextLabel = "Next",
+    totalSteps = 5,
 }: OnboardingLayoutProps) {
     const { setCurrentStep } = useOnboarding();
     const navigate = useNavigate();
@@ -36,7 +38,7 @@ export default function OnboardingLayout({
         <div className="bg-background flex min-h-screen items-center justify-center px-6 py-12 sm:px-8 lg:px-12">
             <div className="w-full max-w-3xl">
                 <div className="mb-5">
-                    <ProgressBar currentStep={step} totalSteps={5} />
+                    <ProgressBar currentStep={step} totalSteps={totalSteps} />
                 </div>
                 <div className="glass-strong flex w-full flex-col border border-gray-300 p-8">
                     {children}
