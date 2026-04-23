@@ -69,6 +69,8 @@ export default function Step5() {
             name,
             email,
             password,
+            daily_delivery_time: data.dailyDeliveryTime,
+            timezone: data.timezone,
         };
         try {
             await authService.signup(requestData);

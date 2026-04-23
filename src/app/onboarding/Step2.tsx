@@ -37,9 +37,49 @@ const PROFESSIONS = [
     "Pharmacist",
 ];
 
+const TIME_OPTIONS = Array.from({ length: 31 }, (_, index) => {
+    const totalMinutes = 6 * 60 + index * 30;
+    const hour = Math.floor(totalMinutes / 60);
+    const minute = totalMinutes % 60;
+    const value = `${hour.toString().padStart(2, "0")}:${minute
+        .toString()
+        .padStart(2, "0")}`;
+    const label = new Date(2026, 0, 1, hour, minute).toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+    });
+
+    return { label, value };
+});
+
+const FALLBACK_TIMEZONES = [
+    "America/New_York",
+    "America/Chicago",
+    "America/Denver",
+    "America/Los_Angeles",
+    "America/Phoenix",
+    "America/Anchorage",
+    "Pacific/Honolulu",
+    "UTC",
+    "Europe/London",
+    "Europe/Paris",
+    "Asia/Tokyo",
+    "Asia/Ho_Chi_Minh",
+];
+
+const TIMEZONES =
+    typeof Intl.supportedValuesOf === "function"
+        ? Intl.supportedValuesOf("timeZone")
+        : FALLBACK_TIMEZONES;
+
 export default function Step2() {
-    const { setCurrentStep, data, updateData } = useOnboarding();
+    const { setCurrentStep, data, updateData, updateMultiData } =
+        useOnboarding();
     const [profession, setProfession] = useState<string>(data.profession);
+    const [dailyDeliveryTime, setDailyDeliveryTime] = useState(
+        data.dailyDeliveryTime,
+    );
+    const [timezone, setTimezone] = useState(data.timezone);
     const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
     const navigate = useNavigate();
 
@@ -51,7 +91,11 @@ export default function Step2() {
     }, [profession]);
 
     const handleNext = () => {
-        updateData("profession", profession);
+        updateMultiData({
+            profession,
+            dailyDeliveryTime,
+            timezone,
+        });
         setCurrentStep(3);
         navigate("/onboarding/step-3");
     };
@@ -60,12 +104,6 @@ export default function Step2() {
         setProfession(selectedProfession);
         updateData("profession", selectedProfession);
         setShowSuggestions(false);
-    };
-
-    const handleSkip = () => {
-        updateData("profession", "");
-        setCurrentStep(3);
-        navigate("/onboarding/step-3");
     };
 
     return (
@@ -138,7 +176,7 @@ export default function Step2() {
 
                     <motion.div
                         initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
                         className="mt-8"
                     >
@@ -166,17 +204,59 @@ export default function Step2() {
                     </motion.div>
 
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                        className="mt-8"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.15 }}
+                        className="mt-8 grid max-w-xl gap-4 md:grid-cols-2"
                     >
-                        <button
-                            onClick={handleSkip}
-                            className="text-sm text-gray-400 transition-colors duration-200 hover:text-gray-300"
-                        >
-                            Prefer not to say
-                        </button>
+                        <div className="flex flex-col">
+                            <label
+                                htmlFor="daily-delivery-time"
+                                className="mb-2 text-sm text-gray-300"
+                            >
+                                Daily podcast time
+                            </label>
+                            <select
+                                id="daily-delivery-time"
+                                value={dailyDeliveryTime}
+                                onChange={(event) =>
+                                    setDailyDeliveryTime(event.target.value)
+                                }
+                                className="rounded-xl border border-gray-700 bg-gray-900/50 px-4 py-2 text-white transition-colors duration-300 focus:border-indigo-500 focus:outline-none"
+                            >
+                                {TIME_OPTIONS.map((option) => (
+                                    <option
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="flex flex-col">
+                            <label
+                                htmlFor="timezone"
+                                className="mb-2 text-sm text-gray-300"
+                            >
+                                Timezone
+                            </label>
+                            <select
+                                id="timezone"
+                                value={timezone}
+                                onChange={(event) =>
+                                    setTimezone(event.target.value)
+                                }
+                                className="rounded-xl border border-gray-700 bg-gray-900/50 px-4 py-2 text-white transition-colors duration-300 focus:border-indigo-500 focus:outline-none"
+                            >
+                                {TIMEZONES.map((timezone) => (
+                                    <option key={timezone} value={timezone}>
+                                        {timezone}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </motion.div>
                 </div>
             </>

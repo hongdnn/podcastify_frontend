@@ -6,6 +6,8 @@ export interface OnboardingData {
     profession: string;
     podcastLength: "5" | "10";
     voicePreference: "male" | "female" | "neutral";
+    dailyDeliveryTime: string;
+    timezone: string;
 }
 
 interface OnboardingContextType {
@@ -22,6 +24,8 @@ const defaultData: OnboardingData = {
     profession: "",
     podcastLength: "5",
     voicePreference: "neutral",
+    dailyDeliveryTime: "08:30",
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 };
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(
@@ -31,7 +35,7 @@ const OnboardingContext = createContext<OnboardingContextType | undefined>(
 export function OnboardingProvider({children}: { children: React.ReactNode }) {
     const [data, setData] = useState<OnboardingData>(() => {
         const saved = localStorage.getItem("onboardingData");
-        return saved ? JSON.parse(saved) : defaultData;
+        return saved ? { ...defaultData, ...JSON.parse(saved) } : defaultData;
     });
     
       const [currentStep, setCurrentStep] = useState(() => {

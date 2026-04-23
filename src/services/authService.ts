@@ -7,6 +7,8 @@ export interface SignupRequest {
     password: string;
     name: string;
     preferences: string;
+    daily_delivery_time: string;
+    timezone: string;
 }
 
 export interface LoginRequest {

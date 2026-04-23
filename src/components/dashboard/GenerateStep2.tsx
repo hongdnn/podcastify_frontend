@@ -7,7 +7,10 @@ type VoicePreference = "male" | "female" | "neutral";
 
 interface GenerateStep2Props {
     onBack: () => void;
-    onNext: () => void;
+    onNext: (updates: {
+        podcastLength: PodcastLength;
+        voicePreference: VoicePreference;
+    }) => void;
 }
 
 export default function GenerateStep2({ onBack, onNext }: GenerateStep2Props) {
@@ -25,7 +28,10 @@ export default function GenerateStep2({ onBack, onNext }: GenerateStep2Props) {
                 podcastLength,
                 voicePreference,
             });
-            onNext();
+            onNext({
+                podcastLength,
+                voicePreference,
+            });
         }
     };
 

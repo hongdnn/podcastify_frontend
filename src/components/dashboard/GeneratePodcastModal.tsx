@@ -39,7 +39,12 @@ export default function GeneratePodcastModal({
                     {step === 2 && (
                         <GenerateStep2
                             onBack={() => setStep(1)}
-                            onNext={() => onClose(data)}
+                            onNext={(updates) =>
+                                onClose({
+                                    ...data,
+                                    ...updates,
+                                })
+                            }
                         />
                     )}
                 </div>
