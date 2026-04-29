@@ -65,29 +65,29 @@ export default function GenerateStep2({ onBack, onNext }: GenerateStep2Props) {
                                             onClick={() =>
                                                 setPodcastLength(length)
                                             }
-                                            className={`transform rounded-xl p-6 transition-all duration-300 hover:scale-105 ${
+                                            className={`relative transform rounded-xl border-2 p-6 transition-all duration-300 hover:scale-105 ${
                                                 podcastLength === length
-                                                    ? "glass-strong border-2 border-indigo-500 bg-indigo-500/10"
-                                                    : "glass border border-gray-700 hover:border-gray-600"
+                                                    ? "glass-strong border-indigo-500 bg-indigo-500/10"
+                                                    : "glass border-gray-700 hover:border-gray-600"
                                             }`}
                                         >
-                                        <div
-                                        className={`absolute top-2 right-2 ${podcastLength === length ? "" : "hidden"} flex h-6 w-6 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-purple-600`}
-                                    >
-                                        <svg
-                                            className="h-4 w-4 text-white"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={3}
-                                                d="M5 13l4 4L19 7"
-                                            />
-                                        </svg>
-                                    </div>
+                                            <div
+                                                className={`absolute top-2 right-2 ${podcastLength === length ? "" : "hidden"} flex h-6 w-6 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-purple-600`}
+                                            >
+                                                <svg
+                                                    className="h-4 w-4 text-white"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={3}
+                                                        d="M5 13l4 4L19 7"
+                                                    />
+                                                </svg>
+                                            </div>
                                             <div className="my-2 text-2xl font-bold text-white">
                                                 {length}
                                             </div>
@@ -131,29 +131,29 @@ export default function GenerateStep2({ onBack, onNext }: GenerateStep2Props) {
                                         onClick={() =>
                                             setVoicePreference(option.value)
                                         }
-                                        className={`transform rounded-xl p-6 transition-all duration-300 hover:scale-105 ${
+                                        className={`relative transform rounded-xl border-2 p-6 transition-all duration-300 hover:scale-105 ${
                                             voicePreference === option.value
-                                                ? "glass-strong border-2 border-indigo-500 bg-indigo-500/10"
-                                                : "glass border border-gray-700 hover:border-gray-600"
+                                                ? "glass-strong border-indigo-500 bg-indigo-500/10"
+                                                : "glass border-gray-700 hover:border-gray-600"
                                         }`}
                                     >
                                         <div
-                                        className={`absolute top-2 right-2 ${voicePreference === option.value ? "" : "hidden"} flex h-6 w-6 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-purple-600`}
-                                    >
-                                        <svg
-                                            className="h-4 w-4 text-white"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
+                                            className={`absolute top-2 right-2 ${voicePreference === option.value ? "" : "hidden"} flex h-6 w-6 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-purple-600`}
                                         >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={3}
-                                                d="M5 13l4 4L19 7"
-                                            />
-                                        </svg>
-                                    </div>
+                                            <svg
+                                                className="h-4 w-4 text-white"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={3}
+                                                    d="M5 13l4 4L19 7"
+                                                />
+                                            </svg>
+                                        </div>
                                         <div className="my-2 mb-4 text-3xl">
                                             {option.icon}
                                         </div>
