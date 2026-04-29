@@ -28,6 +28,20 @@ function formatPlaybackTime(seconds: number) {
     return `${minutes}:${remainingSeconds}`;
 }
 
+function mergeUniquePodcasts(existing: Podcast[], incoming: Podcast[]) {
+    const seenIds = new Set(existing.map((podcast) => podcast.id));
+    const nextPodcasts = [...existing];
+
+    for (const podcast of incoming) {
+        if (seenIds.has(podcast.id)) continue;
+
+        seenIds.add(podcast.id);
+        nextPodcasts.push(podcast);
+    }
+
+    return nextPodcasts;
+}
+
 export default function Dashboard() {
     const { setAuthenticated } = useAuth();
     const [todayPodcasts, setTodayPodcasts] = useState<Podcast[]>([]);
@@ -133,13 +147,20 @@ export default function Dashboard() {
         setError(null);
         try {
             const data = await dashboardSerice.getPodcastList(limit, offset);
-            const todayPodcasts = data.podcasts.filter(p => p.created_at >= today)
-            const previousPodcasts = data.podcasts.filter(p => p.created_at < today)
-            setTodayPodcasts((p) => p.concat(todayPodcasts))
-            setPreviousPodcasts((p) => p.concat(previousPodcasts))
-            setPage((prev) =>
-                data.podcasts.length == 8 ? (prev ?? 0) + 1 : null,
+            const nextTodayPodcasts = data.podcasts.filter(
+                (podcast) => podcast.created_at >= today,
             );
+            const nextPreviousPodcasts = data.podcasts.filter(
+                (podcast) => podcast.created_at < today,
+            );
+
+            setTodayPodcasts((podcasts) =>
+                mergeUniquePodcasts(podcasts, nextTodayPodcasts),
+            );
+            setPreviousPodcasts((podcasts) =>
+                mergeUniquePodcasts(podcasts, nextPreviousPodcasts),
+            );
+            setPage(data.podcasts.length === limit ? offset + 1 : null);
         } catch (error) {
             setError(getErrorMessage(error));
         } finally {
@@ -153,11 +174,16 @@ export default function Dashboard() {
         setError(null);
         try {
             const data = await dashboardSerice.getPodcastList(limit, 0);
-            const todayPodcasts = data.podcasts.filter(p => p.created_at >= today)
-            setTodayPodcasts((p) => p.concat(todayPodcasts))
-            setPage((prev) =>
-                data.podcasts.length == 8 ? (prev ?? 0) + 1 : null,
+            const nextTodayPodcasts = data.podcasts.filter(
+                (podcast) => podcast.created_at >= today,
             );
+            const nextPreviousPodcasts = data.podcasts.filter(
+                (podcast) => podcast.created_at < today,
+            );
+
+            setTodayPodcasts(nextTodayPodcasts);
+            setPreviousPodcasts(nextPreviousPodcasts);
+            setPage(data.podcasts.length === limit ? 1 : null);
         } catch (error) {
             setError(getErrorMessage(error));
         } finally {
